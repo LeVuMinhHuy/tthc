@@ -1,5 +1,4 @@
 import re
-
 from fastai.imports import torch, np
 from sklearn import preprocessing
 from spacy import vocab
@@ -7,13 +6,25 @@ from spacy import vocab
 from constant import clf, INTENT_THRESHOLD, TYPE_NAME_SEARCH_TTHC, list_chiphi_notification, list_giayto_notification, \
     list_ketqua_notification, list_thoigian_notification, list_thuchien_notification, list_diadiem_notification
 from regex import inform_name_tthc_list
+from query import search, query
+
+
+def searchTTHC(query, limit):
+    result = search(0, query, limit)
+    if len(result) > 0:
+        return list(map(lambda x: {'id': x['_id'], "name": x['_source']['name']}, result))
+    return []
+
+def queryTTHC():
+    print(query(0,13))
 
 def catch_intent(message):
     message = preprocess_message(message)
     print("message: ", message)
 
     intent = extract_and_get_intent(message)
-    if intent != 'none': return intent
+    if intent != 'none':
+        return intent
 
     predict_result = clf.predict(message)
 
@@ -22,7 +33,7 @@ def catch_intent(message):
     print(predict_result, proba)
 
     if (proba < INTENT_THRESHOLD):
-      return 'none'
+        return 'none'
 
     print(int(predict_result[0]))
 
@@ -69,13 +80,15 @@ def get_name_tthc(message):
         type_name = TYPE_NAME_SEARCH_TTHC.CO_QUAN
         return [filter_message, type_name]
 
-    filter_message = re.sub(r"^.*?((thủ tục)|(cách làm)|(cách))", '', message.lower())
+    filter_message = re.sub(
+        r"^.*?((thủ tục)|(cách làm)|(cách))", '', message.lower())
     type_name = TYPE_NAME_SEARCH_TTHC.THU_TUC
     return [filter_message, type_name]
 
 
 def preprocess_message(message):
-    message = re.sub('[\:\_=\+\#\@\$\%\$\\(\)\~\@\;\'\|\<\>\]\[\"\–“”…*]', ' ', message)
+    message = re.sub(
+        '[\:\_=\+\#\@\$\%\$\\(\)\~\@\;\'\|\<\>\]\[\"\–“”…*]', ' ', message)
 
     message = message.lower()
     message = message.replace(',', ' , ')
@@ -219,11 +232,16 @@ def compound2unicode(text):
 
 
 def get_name_intent(id):
-    if id == 0: return 'chiphi'
-    if id == 1: return 'diadiem'
-    if id == 2: return 'giayto'
-    if id == 3: return 'ketqua'
-    if id == 4: return 'thoigian'
-    if id == 5: return 'thuchien'
+    if id == 0:
+        return 'chiphi'
+    if id == 1:
+        return 'diadiem'
+    if id == 2:
+        return 'giayto'
+    if id == 3:
+        return 'ketqua'
+    if id == 4:
+        return 'thoigian'
+    if id == 5:
+        return 'thuchien'
     return 'none'
-
