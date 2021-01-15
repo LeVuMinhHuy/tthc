@@ -8,7 +8,7 @@ from query import search
 def searchTTHC(type_database, query):
     result = search(type_database, query)
     if len(result) > 0:
-        TTHC = list(map(lambda x: list(map(lambda x: {x[0]: x[1]}, result[0].items())), result))
+        TTHC = list(map(lambda x: list(map(lambda y: {y[0]: y[1]}, x.items())), result))
         return [TTHC, len(TTHC)]
     return []
 
