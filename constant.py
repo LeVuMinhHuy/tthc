@@ -9,7 +9,7 @@ current_path = os.path.abspath(os.path.dirname(__file__))
 clf = load_learner(os.path.join(current_path, 'saved_models'))
 
 INTENT_THRESHOLD = 94  # magical number
-
+TENTTHC_THRESHOLD_SCORE = 10 # ???
 
 class TYPE_NAME_SEARCH_TTHC:
     THU_TUC = 0,

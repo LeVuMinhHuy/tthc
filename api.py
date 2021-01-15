@@ -14,7 +14,6 @@ def msg(code, mess=None):
 @app.route('/api/send-message', methods=['POST'])
 def send_message():
     input_data = request.json
-    print(input_data)
     if "message" not in input_data.keys():
         return msg(400, "Message cannot be None")
     else:
@@ -24,7 +23,7 @@ def send_message():
         result = get_name_tthc(message)
         query = result[0]
         type_database = result[1]
-        return jsonify(searchTTHC(type_database, query, 5))
+        return jsonify(searchTTHC(type_database, query))
 
     intent = catch_intent(message)
     return intent

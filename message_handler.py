@@ -1,22 +1,16 @@
 import re
-from fastai.imports import torch, np
-from sklearn import preprocessing
-from spacy import vocab
 
 from constant import clf, INTENT_THRESHOLD, TYPE_NAME_SEARCH_TTHC, list_chiphi_notification, list_giayto_notification, \
     list_ketqua_notification, list_thoigian_notification, list_thuchien_notification, list_diadiem_notification
-from regex import inform_name_tthc_list
-from query import search, query
+from query import search
 
 
-def searchTTHC(type_database, query, limit):
-    result = search(type_database, query, limit)
+def searchTTHC(type_database, query):
+    result = search(type_database, query)
     if len(result) > 0:
-        return list(map(lambda x: {'id': x['_id'], "name": x['_source']['name']}, result))
+        TTHC = list(map(lambda x: list(map(lambda x: {x[0]: x[1]}, result[0].items())), result))
+        return [TTHC, len(TTHC)]
     return []
-
-def queryTTHC():
-    print(query(0,13))
 
 def catch_intent(message):
     message = preprocess_message(message)
