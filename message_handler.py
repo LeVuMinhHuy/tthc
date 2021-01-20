@@ -3,14 +3,17 @@ import re
 from constant import clf, INTENT_THRESHOLD, TYPE_NAME_SEARCH_TTHC, list_chiphi_notification, list_giayto_notification, \
     list_ketqua_notification, list_thoigian_notification, list_thuchien_notification, list_diadiem_notification
 from query import search
+from functools import reduce
 
 
 def searchTTHC(type_database, query):
-    result = search(type_database, query)
+    query = preprocess_message(query)
+    [result, info] = search(type_database, query)
     if len(result) > 0:
         TTHC = list(map(lambda x: list(map(lambda y: {y[0]: y[1]}, x.items())), result))
-        return [TTHC, len(TTHC)]
-    return []
+        return [flatten(TTHC), info]
+    return [[],{'type': 'unknown', 'count': 0}]
+
 
 def catch_intent(message):
     message = preprocess_message(message)
@@ -34,25 +37,25 @@ def extract_and_get_intent(message):
         if message.lower().find(notification) != -1:
             return 'chiphi'
 
-    for notification in list_giayto_notification:
+    for notification in list_diadiem_notification:
         if message.lower().find(notification) != -1:
-            return 'giayto'
-
-    for notification in list_ketqua_notification:
-        if message.lower().find(notification) != -1:
-            return 'ketqua'
+            return 'diadiem'
 
     for notification in list_thoigian_notification:
         if message.lower().find(notification) != -1:
             return 'thoigian'
 
+    for notification in list_ketqua_notification:
+        if message.lower().find(notification) != -1:
+            return 'ketqua'
+
     for notification in list_thuchien_notification:
         if message.lower().find(notification) != -1:
             return 'thuchien'
 
-    for notification in list_diadiem_notification:
+    for notification in list_giayto_notification:
         if message.lower().find(notification) != -1:
-            return 'diadiem'
+            return 'giayto'
 
     return 'none'
 
@@ -233,3 +236,12 @@ def get_name_intent(id):
     if id == 5:
         return 'thuchien'
     return 'none'
+
+
+def update(a, b):
+    a.update(b)
+    return a
+
+
+def flatten(result):
+    return list(map(lambda x: reduce(update, x), result))

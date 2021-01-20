@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from message_handler import catch_intent, get_name_tthc,searchTTHC
+from message_handler import catch_intent, get_name_tthc,searchTTHC,flatten
+from query import get_info
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -26,7 +28,20 @@ def send_message():
         return jsonify(searchTTHC(type_database, query))
 
     intent = catch_intent(message)
-    return intent
+    maTTHC = input_data['state']
+    print(maTTHC)
+
+    [info_result, info_type] = get_info(intent, maTTHC)
+    if(len(info_result) == 0 and intent == 'chiphi'):
+        return jsonify([[],{'type': 'chiphi', 'count': 0}])
+
+    if(len(info_result) > 0):
+        info = list(map(lambda x: list(map(lambda y: {y[0]: y[1]}, x.items())), info_result))
+        flattern_info = flatten(info)
+        return jsonify([flattern_info, {'type': intent, 'count': len(flattern_info)}])
+
+    return jsonify([[],{'type': 'unknown', 'count': 0}])
+
 
 if __name__ == '__main__':
     app.run(debug=True)
